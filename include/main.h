@@ -71,6 +71,7 @@ struct          //time signal structure
 
 struct          //params struct for save
 {
+    int iBrightMode = 0;
 
 
 } params;

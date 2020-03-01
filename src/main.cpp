@@ -359,6 +359,39 @@ void loop()
             alarmTimeEnd();
         }
 
+        if (mode == CLOCK)
+        {
+            params.iBrightMode++;
+
+            if (params.iBrightMode == 3)
+            {
+                params.iBrightMode = 0;
+            }
+
+
+            switch (params.iBrightMode)
+            {
+            case 0:
+                sendCmdAll(CMD_INTENSITY, 0); // Установка яркости
+                break;
+            case 1:
+                sendCmdAll(CMD_INTENSITY, 5); // Установка яркости
+                break;
+            case 2:
+                sendCmdAll(CMD_INTENSITY, 15); // Установка яркости
+                break;
+
+            default:
+                break;
+            }
+
+
+            Serial.println(params.iBrightMode);
+
+        }
+
+
+
 //   bmp_temp->getEvent(&temp_event);
 //   bmp_pressure->getEvent(&pressure_event);
 
