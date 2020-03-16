@@ -177,7 +177,7 @@ void loop()
             {
                 if (enc.isFastL())
                 {
-                    timerTime = timerTime - 10;
+                    timerTime = timerTime - 3;
                 }
                 else
                     timerTime--;
@@ -207,7 +207,7 @@ void loop()
             {
                 if (enc.isFastR())
                 {
-                    timerTime = timerTime + 10;
+                    timerTime = timerTime + 3;
                 }
                 else
                     timerTime++;
@@ -320,6 +320,15 @@ void loop()
         {
             // setMode++;          //next mode
 
+            // if (setMode > SETHOURSIGNAL)
+            // {
+            //     setMode = SETHOUR;
+            //     mode = CLOCK;
+            // }
+
+
+
+
             switch (setMode)
             {
             case SETHOUR:
@@ -330,7 +339,15 @@ void loop()
                 setMode = SETSECOND;
                 break;
             case SETSECOND:
-                clock.setDateTime(dt.year, dt.month, dt.day, setHour, setMinute, 3); //add 3 sec for setup time
+                if (setSecondFlag)
+                {
+                    clock.setDateTime(dt.year, dt.month, dt.day, setHour, setMinute, dt.second + 3); //add 3 sec for setup time
+                }
+                else
+                {
+                    clock.setDateTime(dt.year, dt.month, dt.day, setHour, setMinute, dt.second); //add 3 sec for setup time
+                }
+
                 setYear = dt.year;
                 setMode = SETYEAR;
                 break;
@@ -345,9 +362,18 @@ void loop()
                 break;
             case SETDAY:
                 clock.setDateTime(setYear, setMon, setDay, setHour, setMinute, dt.second);
-                setMode = SETHOUR;
-                mode = CLOCK;
+                setMode = SETHOURSIGNAL;
                 break;
+            case SETHOURSIGNAL:
+                if (timeSignal.hourSignal)
+                {
+                    setMode = SETHOURSIGNALON;
+
+                } else {
+                    setMode = SETHOUR;
+                    mode = CLOCK;
+                }
+            break;
 
             default:
                 break;
@@ -361,6 +387,7 @@ void loop()
 
         if (mode == CLOCK)
         {
+
             params.iBrightMode++;
 
             if (params.iBrightMode == 3)
@@ -368,26 +395,21 @@ void loop()
                 params.iBrightMode = 0;
             }
 
-
             switch (params.iBrightMode)
             {
             case 0:
-                sendCmdAll(CMD_INTENSITY, 0); // Установка яркости
+                sendCmdAll(CMD_INTENSITY, 0);
                 break;
             case 1:
-                sendCmdAll(CMD_INTENSITY, 5); // Установка яркости
+                sendCmdAll(CMD_INTENSITY, 5);
                 break;
             case 2:
-                sendCmdAll(CMD_INTENSITY, 15); // Установка яркости
+                sendCmdAll(CMD_INTENSITY, 15);
                 break;
 
             default:
                 break;
             }
-
-
-            Serial.println(params.iBrightMode);
-
         }
 
 
@@ -431,9 +453,8 @@ void loop()
     }
 
     //check hour signal
-    if (timeSignal.hourSignal and (secFr == 0) and (dt.minute == 0) and
-       (dt.hour >= timeSignal.timeSignalStart) and (dt.hour <= timeSignal.timeSignalEnd) and
-       (dt.second == 0) )
+    if (timeSignal.hourSignal and (dt.minute == 0) and (dt.second == 0) and (secFr == 0) and
+       (dt.hour >= timeSignal.timeSignalStart) and (dt.hour <= timeSignal.timeSignalEnd))
     {
         bip(300);
     }
@@ -453,7 +474,7 @@ void loop()
 void setTime()
 {
     clr();
-    showDigit(61 - 32, digPosSet[1], fontUA_RU_PL_DE);  //=
+    showDigit(58 - 32, digPosSet[1], fontUA_RU_PL_DE);  //:
 
     switch (setMode)
     {
@@ -511,6 +532,13 @@ void setTime()
         // showDigit(61 - 32, digPosSet[1], fontUA_RU_PL_DE);
         showDigit(flash ? (setSecond / 10) : 24, digPosSet[2], dig5x8rn);
         showDigit(flash ? (setSecond % 10) : 24, digPosSet[3], dig5x8rn);
+
+        if (enc.isRight() or enc.isLeft())
+        {
+            clock.setDateTime(dt.year, dt.month, dt.day, dt.hour, dt.minute, 0); //add 3 sec for setup time
+            setSecondFlag = true;
+        }
+
         break;
 
     case SETYEAR:
@@ -562,7 +590,7 @@ void setTime()
         break;
 
     case SETDAY:
-        showDigit(100 - 32, digPosSet[0], fontUA_RU_PL_DE);     //m
+        showDigit(100 - 32, digPosSet[0], fontUA_RU_PL_DE);     //d
         // showDigit(61 - 32, digPosSet[1], fontUA_RU_PL_DE);
         showDigit(flash ? (setDay / 10) : 24, digPosSet[2], dig5x8rn);
         showDigit(flash ? (setDay % 10) : 24, digPosSet[3], dig5x8rn);
@@ -583,6 +611,42 @@ void setTime()
                 setDay = maxDays;
             }
         }
+        break;
+
+    case SETHOURSIGNAL:
+        showDigit(72 - 32, 0, fontUA_RU_PL_DE);     //H
+        showDigit(115 - 32, 6, fontUA_RU_PL_DE);     //s
+        showDigit(58 - 32, 15, fontUA_RU_PL_DE);  //:
+        showDigit(111 - 32, 18, fontUA_RU_PL_DE); //o
+
+
+        if (timeSignal.hourSignal)
+        {
+            showDigit(110 - 32, 24, fontUA_RU_PL_DE); //n
+        } else
+        {
+            showDigit(102 - 32, 24, fontUA_RU_PL_DE); //f
+            showDigit(102 - 32, 28, fontUA_RU_PL_DE); //f
+        }
+
+        if (enc.isRight() or enc.isLeft())
+        {
+            timeSignal.hourSignal = not timeSignal.hourSignal;
+        }
+        break;
+
+    case SETHOURSIGNALON:
+        clr();
+        showDigit(83 - 32, 0, fontUA_RU_PL_DE);   //S
+        showDigit(116 - 32, 5, fontUA_RU_PL_DE);    //t
+        showDigit(114 - 32, 10, fontUA_RU_PL_DE);   //r
+        showDigit(58 - 32, 15, fontUA_RU_PL_DE);  //:
+
+
+
+
+
+
         break;
 
     default:
@@ -718,6 +782,7 @@ void showAnimClock()
         refreshAll();
     }
 }
+
 
 //=== Output only digits ==================================================================================
 void showDigit(char ch, int col, const uint8_t *data)

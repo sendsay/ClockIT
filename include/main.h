@@ -60,7 +60,7 @@ int setYear = 20;
 uint8_t setMon = 9;
 uint8_t setDay = 6;
 uint8_t maxDays = 0;
-
+boolean setSecondFlag = false;
 
 struct          //time signal structure
 {
