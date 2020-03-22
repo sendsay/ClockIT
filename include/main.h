@@ -19,7 +19,7 @@ int secFr, lastSecond, lastMinute;                    // Работа с вре�
 bool ShowFlag = false;                                // Показывать данные с датчиков
 // byte digPos[6] = {1, 8, 18, 25, 15, 16};
 byte digPos[6] = {1, 8, 19, 26, 15, 16};
-byte digPosSet[4] = {1, 9, 17, 25};
+byte digPosSet[4] = {1, 9, 20, 27};
 
 float t5 = 0;                           // ??
 int t4 = 0;                             // ??
@@ -62,16 +62,27 @@ uint8_t setDay = 6;
 uint8_t maxDays = 0;
 boolean setSecondFlag = false;
 
-struct          //time signal structure
+uint8_t setHSigStr = 0;
+uint8_t setHSigEnd = 0;
+
+// struct          //time signal structure
+// {
+//     boolean enable = true;
+//     uint8_t beginTime = 6;
+//     uint8_t endTime = 21;
+// } timeSignal;
+
+struct
 {
-    boolean hourSignal = true;
-    byte timeSignalStart = 6;
-    byte timeSignalEnd = 21;
+    boolean enable = true;
+    uint8_t bgnTime = 6;
+    uint8_t endTime = 21;
 } timeSignal;
+
 
 struct          //params struct for save
 {
-    int iBrightMode = 0;
+    int brightMode = 0;
 
 
 } params;

@@ -74,7 +74,7 @@ void setup()
 
     initMAX7219();                // Initialize panel
     sendCmdAll(CMD_SHUTDOWN, 1);  // Сброс панели
-    sendCmdAll(CMD_INTENSITY, 0); // Установка яркости
+    sendCmdAll(CMD_INTENSITY, 15); // Установка яркости
 
     enc.setTickMode(AUTO);
 
@@ -365,7 +365,7 @@ void loop()
                 setMode = SETHOURSIGNAL;
                 break;
             case SETHOURSIGNAL:
-                if (timeSignal.hourSignal)
+                if (timeSignal.enable)
                 {
                     setMode = SETHOURSIGNALON;
 
@@ -373,6 +373,15 @@ void loop()
                     setMode = SETHOUR;
                     mode = CLOCK;
                 }
+            break;
+
+            case SETHOURSIGNALON:
+                setMode = SETHOURSIGNALOFF;
+            break;
+
+            case SETHOURSIGNALOFF:
+                setMode = SETHOUR;
+                mode = CLOCK;
             break;
 
             default:
@@ -388,14 +397,14 @@ void loop()
         if (mode == CLOCK)
         {
 
-            params.iBrightMode++;
+            params.brightMode++;
 
-            if (params.iBrightMode == 3)
+            if (params.brightMode == 3)
             {
-                params.iBrightMode = 0;
+                params.brightMode = 0;
             }
 
-            switch (params.iBrightMode)
+            switch (params.brightMode)
             {
             case 0:
                 sendCmdAll(CMD_INTENSITY, 0);
@@ -453,8 +462,8 @@ void loop()
     }
 
     //check hour signal
-    if (timeSignal.hourSignal and (dt.minute == 0) and (dt.second == 0) and (secFr == 0) and
-       (dt.hour >= timeSignal.timeSignalStart) and (dt.hour <= timeSignal.timeSignalEnd))
+    if (timeSignal.enable and (dt.minute == 0) and (dt.second == 0) and (secFr == 0) and
+       (dt.hour >= timeSignal.bgnTime) and (dt.hour <= timeSignal.endTime))
     {
         bip(300);
     }
@@ -614,39 +623,75 @@ void setTime()
         break;
 
     case SETHOURSIGNAL:
-        showDigit(72 - 32, 0, fontUA_RU_PL_DE);     //H
-        showDigit(115 - 32, 6, fontUA_RU_PL_DE);     //s
-        showDigit(58 - 32, 15, fontUA_RU_PL_DE);  //:
-        showDigit(111 - 32, 18, fontUA_RU_PL_DE); //o
+        showDigit(72 - 32, 0, fontUA_RU_PL_DE);         //H
+        showDigit(115 - 32, 6, fontUA_RU_PL_DE);        //s
+        showDigit(58 - 32, 15, fontUA_RU_PL_DE);        //:
+        showDigit(111 - 32, 18, fontUA_RU_PL_DE);       //o
 
 
-        if (timeSignal.hourSignal)
+        if (timeSignal.enable)
         {
-            showDigit(110 - 32, 24, fontUA_RU_PL_DE); //n
+            showDigit(110 - 32, 24, fontUA_RU_PL_DE);   //n
         } else
         {
-            showDigit(102 - 32, 24, fontUA_RU_PL_DE); //f
-            showDigit(102 - 32, 28, fontUA_RU_PL_DE); //f
+            showDigit(102 - 32, 24, fontUA_RU_PL_DE);   //f
+            showDigit(102 - 32, 28, fontUA_RU_PL_DE);   //f
         }
 
         if (enc.isRight() or enc.isLeft())
         {
-            timeSignal.hourSignal = not timeSignal.hourSignal;
+            timeSignal.enable = not timeSignal.enable;
         }
         break;
 
     case SETHOURSIGNALON:
         clr();
-        showDigit(83 - 32, 0, fontUA_RU_PL_DE);   //S
-        showDigit(116 - 32, 5, fontUA_RU_PL_DE);    //t
-        showDigit(114 - 32, 10, fontUA_RU_PL_DE);   //r
-        showDigit(58 - 32, 15, fontUA_RU_PL_DE);  //:
+        showDigit(83 - 32, 0, fontUA_RU_PL_DE);         //S
+        showDigit(116 - 32, 5, fontUA_RU_PL_DE);        //t
+        showDigit(114 - 32, 10, fontUA_RU_PL_DE);       //r
+        showDigit(58 - 32, 15, fontUA_RU_PL_DE);        //:
 
+        showDigit(flash ? (timeSignal.bgnTime / 10) : 24, digPosSet[2], dig5x8rn);
+        showDigit(flash ? (timeSignal.bgnTime % 10) : 24, digPosSet[3], dig5x8rn);
 
+        if (enc.isRight())
+        {
+            timeSignal.bgnTime++;
+            if (timeSignal.bgnTime > 23)
+            {
+                timeSignal.bgnTime = 0;
+            }
+        }
 
+        // if (enc.isLeft())
+        // {
+        //     timeSignal.bgnTime--;
+        //     if (timeSignal.bgnTime < 0)
+        //     {
+        //         timeSignal.bgnTime = 23;
+        //     }
 
+        // }
+        break;
 
+    case SETHOURSIGNALOFF:
+        clr();
+        showDigit(69 - 32, 0, fontUA_RU_PL_DE);         //S
+        showDigit(110 - 32, 5, fontUA_RU_PL_DE);        //t
+        showDigit(100 - 32, 10, fontUA_RU_PL_DE);       //r
+        showDigit(58 - 32, 15, fontUA_RU_PL_DE);        //:
 
+        showDigit(flash ? (timeSignal.endTime / 10) : 24, digPosSet[2], dig5x8rn);
+        showDigit(flash ? (timeSignal.endTime % 10) : 24, digPosSet[3], dig5x8rn);
+
+        if (enc.isRight())
+        {
+            timeSignal.endTime++;
+            if (timeSignal.endTime > 23)
+            {
+                timeSignal.endTime = 0;
+            }
+        }
         break;
 
     default:
