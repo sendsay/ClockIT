@@ -338,7 +338,7 @@ void loop()
             case SETSECOND:
                 if (setSecondFlag)
                 {
-                    clock.setDateTime(dt.year, dt.month, dt.day, setHour, setMinute, dt.second + 3); //add 3 sec for setup time
+                    clock.setDateTime(dt.year, dt.month, dt.day, setHour, setMinute + 1, dt.second + 3); //add 3 sec for setup time
                 }
                 else
                 {
