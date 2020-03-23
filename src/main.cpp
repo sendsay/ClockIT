@@ -326,9 +326,6 @@ void loop()
             //     mode = CLOCK;
             // }
 
-
-
-
             switch (setMode)
             {
             case SETHOUR:
@@ -345,7 +342,7 @@ void loop()
                 }
                 else
                 {
-                    clock.setDateTime(dt.year, dt.month, dt.day, setHour, setMinute, dt.second); //add 3 sec for setup time
+                    clock.setDateTime(dt.year, dt.month, dt.day, setHour, setMinute, dt.second);
                 }
 
                 setYear = dt.year;
@@ -663,15 +660,14 @@ void setTime()
             }
         }
 
-        // if (enc.isLeft())
-        // {
-        //     timeSignal.bgnTime--;
-        //     if (timeSignal.bgnTime < 0)
-        //     {
-        //         timeSignal.bgnTime = 23;
-        //     }
-
-        // }
+        if (enc.isLeft())
+        {
+            timeSignal.bgnTime--;
+            if (timeSignal.bgnTime < 0)
+            {
+                timeSignal.bgnTime = 23;
+            }
+        }
         break;
 
     case SETHOURSIGNALOFF:
@@ -690,6 +686,15 @@ void setTime()
             if (timeSignal.endTime > 23)
             {
                 timeSignal.endTime = 0;
+            }
+        }
+
+        if (enc.isLeft())
+        {
+            timeSignal.endTime--;
+            if (timeSignal.endTime < 0)
+            {
+                timeSignal.endTime = 23;
             }
         }
         break;

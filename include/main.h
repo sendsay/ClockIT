@@ -65,18 +65,11 @@ boolean setSecondFlag = false;
 uint8_t setHSigStr = 0;
 uint8_t setHSigEnd = 0;
 
-// struct          //time signal structure
-// {
-//     boolean enable = true;
-//     uint8_t beginTime = 6;
-//     uint8_t endTime = 21;
-// } timeSignal;
-
-struct
+struct          //time signal structure
 {
     boolean enable = true;
-    uint8_t bgnTime = 6;
-    uint8_t endTime = 21;
+    int8_t bgnTime = 6;
+    int8_t endTime = 21;
 } timeSignal;
 
 
