@@ -29,7 +29,8 @@ int t1 = 85;                            // ??
 
 boolean flash = false;                              //flash dots
 
-enum modes {CLOCK, TEMP, HUM, DAYOFWEEK, DAYMON, END_MODES, TIMER, TIMERALARM, SETTIME};
+// enum modes {CLOCK, TEMP, HUM, DAYOFWEEK, DAYMON, END_MODES, TIMER, TIMERALARM, SETTIME};
+enum modes {CLOCK, DAYOFWEEK, DAYMON, END_MODES, TIMER, TIMERALARM, SETTIME};
 int mode = 0;      //show mode
 byte h1 = 0;
 byte h2 = 0;
@@ -53,8 +54,8 @@ boolean timerAlarmFlag = false;
 enum settimemodes {SETHOUR, SETMINUTE, SETSECOND, SETYEAR, SETMONTH, SETDAY, SETHOURSIGNAL,
                     SETHOURSIGNALON, SETHOURSIGNALOFF, SETLANG};
 int setMode = 0;
-uint8_t setHour = 15;
-uint8_t setMinute = 55;
+int setHour = 15;
+int setMinute = 55;
 uint8_t setSecond = 0;
 int setYear = 20;
 uint8_t setMon = 9;
@@ -75,7 +76,7 @@ struct          //time signal structure
 
 struct          //params struct for save
 {
-    int brightMode = 0;
+    int brightMode = 3;
 
 
 } params;

@@ -139,17 +139,17 @@ void loop()
         showAnimClock(); //show time
         // showTimeNew();
         break;
-    case TEMP:
-        t1 = 25;
-        t2 = 7;
-        showSimpleTemp();
-        break;
-    case HUM:
-        h1 = 3;
-        h2 = 7;
-        h3 = 5;
-        showSimpleHum();
-        break;
+    // case TEMP:
+    //     t1 = 25;
+    //     t2 = 7;
+    //     showSimpleTemp();
+    //     break;
+    // case HUM:
+    //     h1 = 3;
+    //     h2 = 7;
+    //     h3 = 5;
+    //     showSimpleHum();
+    //     break;
     case DAYMON:
         showDayMon();
         break;
@@ -326,6 +326,8 @@ void loop()
             //     mode = CLOCK;
             // }
 
+            Serial.println("MODE " + mode);
+
             switch (setMode)
             {
             case SETHOUR:
@@ -338,7 +340,7 @@ void loop()
             case SETSECOND:
                 if (setSecondFlag)
                 {
-                    clock.setDateTime(dt.year, dt.month, dt.day, setHour, setMinute + 1, dt.second + 3); //add 3 sec for setup time
+                    clock.setDateTime(dt.year, dt.month, dt.day, setHour, setMinute, dt.second + 3); //add 3 sec for setup time
                 }
                 else
                 {
@@ -396,7 +398,7 @@ void loop()
 
             params.brightMode++;
 
-            if (params.brightMode == 3)
+            if (params.brightMode >= 3)
             {
                 params.brightMode = 0;
             }
@@ -482,31 +484,29 @@ void setTime()
     clr();
     showDigit(58 - 32, digPosSet[1], fontUA_RU_PL_DE);  //:
 
-    switch (setMode)
-    {
-    case SETHOUR:
-        showDigit(104 - 32, digPosSet[0], fontUA_RU_PL_DE);     //h
-        // showDigit(61 - 32, digPosSet[1], fontUA_RU_PL_DE);
-        showDigit(flash ? (setHour / 10) : 24, digPosSet[2], dig5x8rn);
-        showDigit(flash ? (setHour % 10) : 24, digPosSet[3], dig5x8rn);
+    switch (setMode) {
+        case SETHOUR:
+            showDigit(104 - 32, digPosSet[0], fontUA_RU_PL_DE);     //h
+            // showDigit(61 - 32, digPosSet[1], fontUA_RU_PL_DE);
+            showDigit(flash ? (setHour / 10) : 24, digPosSet[2], dig5x8rn);
+            showDigit(flash ? (setHour % 10) : 24, digPosSet[3], dig5x8rn);  
 
-        if (enc.isRight())
-        {
-            setHour++;
-            if (setHour > 23)
-            {
-                setHour = 0;
+            if (enc.isRight()) {                  
+                setHour++;
+                if (setHour > 23)
+                {
+                    setHour = 0;
+                }
             }
-        }
-        if (enc.isLeft())
-        {
-            setHour--;
-            if (setHour < 0)
-            {
-                setHour = 23;
+            if (enc.isLeft()) {
+                setHour--;
+                Serial.println("LEFT " + (String)setHour);
+                if (setHour < 0) {
+                    setHour = 23;
+                Serial.println("zero");
+                }
             }
-        }
-        break;
+            break;
 
     case SETMINUTE:
         showDigit(109 - 32, digPosSet[0], fontUA_RU_PL_DE);     //m
